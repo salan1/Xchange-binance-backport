@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import java8.util.stream.Collectors;
-import java8.util.stream.Stream;
 import java8.util.stream.StreamSupport;
 import org.knowm.xchange.Exchange;
 import org.knowm.xchange.binance.BinanceAdapters;
@@ -46,6 +45,7 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
         }
         BinanceOrderbook ob = getBinanceOrderbook(pair, limitDepth);
         List<LimitOrder> bids =
+
                 StreamSupport.stream(ob.bids
                         .entrySet()).map(e -> new LimitOrder(OrderType.BID, e.getValue(), pair, null, null, e.getKey()))
                         .collect(Collectors.toList());

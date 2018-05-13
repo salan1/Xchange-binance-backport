@@ -284,7 +284,8 @@ public class BinanceTradeService extends BinanceTradeServiceRaw implements Trade
                                                 t.commission,
                                                 Currency.getInstance(t.commissionAsset)))
                         .collect(Collectors.toList());*/
-        long lastId = binanceTrades.stream().map(t -> t.id).max(Long::compareTo).orElse(0L);
+        long lastId = StreamSupport.stream(binanceTrades).map(t -> t.id).max(Long::compareTo).orElse(0L);
+        // binanceTrades.stream().map(t -> t.id).max(Long::compareTo).orElse(0L);
         return new UserTrades(trades, lastId, Trades.TradeSortType.SortByTimestamp);
     }
 
