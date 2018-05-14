@@ -66,7 +66,16 @@ public class BinanceTradeService extends BinanceTradeServiceRaw implements Trade
         List<BinanceOrder> binanceOpenOrders = super.openOrders(recvWindow, getTimestamp());
         List<LimitOrder> limitOrders = new ArrayList<>();
         List<Order> otherOrders = new ArrayList<>();
-        binanceOpenOrders.forEach(
+        for (BinanceOrder binanceOrder : binanceOpenOrders) {
+            Order order = BinanceAdapters.adaptOrder(binanceOrder);
+            if (order instanceof LimitOrder) {
+                limitOrders.add((LimitOrder) order);
+            } else {
+                otherOrders.add(order);
+            }
+        }
+
+       /* binanceOpenOrders.forEach(
                 binanceOrder -> {
                     Order order = BinanceAdapters.adaptOrder(binanceOrder);
                     if (order instanceof LimitOrder) {
@@ -74,7 +83,7 @@ public class BinanceTradeService extends BinanceTradeServiceRaw implements Trade
                     } else {
                         otherOrders.add(order);
                     }
-                });
+                });*/
         return new OpenOrders(limitOrders, otherOrders);
     }
 

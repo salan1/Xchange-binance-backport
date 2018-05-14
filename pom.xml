@@ -301,7 +301,7 @@
                 <artifactId>retrolambda-maven-plugin</artifactId>
                 <version>2.5.3</version>
             </plugin>
-            
+
             <!-- Ensure compilation is done under Java 8 in all environments -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
