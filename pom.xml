@@ -88,6 +88,8 @@
 
     <modules>
         <module>xchange-binance</module>
+        <module>xchange-gdax</module>
+        <module>xchange-coinbase</module>
     </modules>
 
     <repositories>
