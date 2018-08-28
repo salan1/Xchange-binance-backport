@@ -43,26 +43,20 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
                 limitDepth = (Integer) arg0;
             }
         }
-        BinanceOrderbook ob = getBinanceOrderbook(pair, limitDepth);
-        List<LimitOrder> bids =
+        BinanceOrderbook binanceOrderbook = getBinanceOrderbook(pair, limitDepth);
+        return convertOrderBook(binanceOrderbook, pair);
+    }
 
-                StreamSupport.stream(ob.bids
-                        .entrySet()).map(e -> new LimitOrder(OrderType.BID, e.getValue(), pair, null, null, e.getKey()))
+    public static OrderBook convertOrderBook(BinanceOrderbook ob, CurrencyPair pair) {
+        List<LimitOrder> bids =
+                StreamSupport.stream(ob.bids.entrySet()).map(e -> new LimitOrder(OrderType.BID, e.getValue(), pair, null, null, e.getKey()))
                         .collect(Collectors.toList());
-       /* ob.bids
-            .entrySet()
-            .stream()
-            .map(e -> new LimitOrder(OrderType.BID, e.getValue(), pair, null, null, e.getKey()))
-            .collect(Collectors.toList());*/
+
         List<LimitOrder> asks =
                 StreamSupport.stream(ob.asks
-                        .entrySet()).map(e -> new LimitOrder(OrderType.ASK, e.getValue(), pair, null, null, e.getKey()))
+                        .entrySet())
+                        .map(e -> new LimitOrder(OrderType.ASK, e.getValue(), pair, null, null, e.getKey()))
                         .collect(Collectors.toList());
-        /*ob.asks
-            .entrySet()
-            .stream()
-            .map(e -> new LimitOrder(OrderType.ASK, e.getValue(), pair, null, null, e.getKey()))
-            .collect(Collectors.toList());*/
         return new OrderBook(null, asks, bids);
     }
 
@@ -75,7 +69,6 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
     @Override
     public List<Ticker> getTickers(Params params) throws IOException {
         return StreamSupport.stream(ticker24h()).map(BinanceTicker24h::toTicker).collect(Collectors.toList());
-        //return ticker24h().stream().map(BinanceTicker24h::toTicker).collect(Collectors.toList());
     }
 
     /**
@@ -87,7 +80,7 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
      * <li>2: Long endTime optional, Timestamp in ms to get aggregate trades until INCLUSIVE.
      * <li>3: Integer limit optional, Default 500; max 500.
      * </ul>
-     * <p>
+     *
      * <p>
      */
     @Override
@@ -118,18 +111,7 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
         List<BinanceAggTrades> aggTrades =
                 binance.aggTrades(BinanceAdapters.toSymbol(pair), fromId, startTime, endTime, limit);
         List<Trade> trades =
-                StreamSupport.stream(aggTrades).map(
-                        at ->
-                                new Trade(
-                                        BinanceAdapters.convertType(at.buyerMaker),
-                                        at.quantity,
-                                        pair,
-                                        at.price,
-                                        at.getTimestamp(),
-                                        Long.toString(at.aggregateTradeId)))
-                        .collect(Collectors.toList());
-                /*aggTrades
-                        .stream()
+                StreamSupport.stream(aggTrades)
                         .map(
                                 at ->
                                         new Trade(
@@ -139,7 +121,7 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
                                                 at.price,
                                                 at.getTimestamp(),
                                                 Long.toString(at.aggregateTradeId)))
-                        .collect(Collectors.toList());*/
+                        .collect(Collectors.toList());
         return new Trades(trades, TradeSortType.SortByTimestamp);
     }
 }

@@ -39,7 +39,6 @@ public class BinanceMarketDataServiceRaw extends BinanceBaseService {
 
     public BinanceKline lastKline(CurrencyPair pair, KlineInterval interval) throws IOException {
         return StreamSupport.stream(klines(pair, interval, 1, null, null)).collect(StreamUtils.singletonCollector());
-        //return klines(pair, interval, 1, null, null).stream().collect(StreamUtils.singletonCollector());
     }
 
     public List<BinanceKline> klines(CurrencyPair pair, KlineInterval interval) throws IOException {
@@ -51,12 +50,9 @@ public class BinanceMarketDataServiceRaw extends BinanceBaseService {
             throws IOException {
         List<Object[]> raw =
                 binance.klines(BinanceAdapters.toSymbol(pair), interval.code(), limit, startTime, endTime);
-        return StreamSupport.stream(raw).map(obj -> new BinanceKline(pair, interval, obj))
-                .collect(Collectors.toList());
-                /*
-                raw.stream()
+        return StreamSupport.stream(raw)
                 .map(obj -> new BinanceKline(pair, interval, obj))
-                .collect(Collectors.toList());*/
+                .collect(Collectors.toList());
     }
 
     public List<BinanceTicker24h> ticker24h() throws IOException {
@@ -71,13 +67,9 @@ public class BinanceMarketDataServiceRaw extends BinanceBaseService {
     }
 
     public BinancePrice tickerPrice(CurrencyPair pair) throws IOException {
-        return StreamSupport.stream(tickerAllPrices()).filter(p -> p.getCurrencyPair().equals(pair))
+        return StreamSupport.stream(tickerAllPrices())
+                .filter(p -> p.getCurrencyPair().equals(pair))
                 .collect(StreamUtils.singletonCollector());
-            /*
-            tickerAllPrices()
-        .stream()
-        .filter(p -> p.getCurrencyPair().equals(pair))
-        .collect(StreamUtils.singletonCollector());*/
     }
 
     public List<BinancePrice> tickerAllPrices() throws IOException {

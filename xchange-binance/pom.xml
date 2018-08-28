@@ -4,9 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>xchange-parent</artifactId>
         <groupId>org.knowm.xchange</groupId>
-        <version>4.3.7-SNAPSHOT</version>
+        <artifactId>xchange-parent</artifactId>
+        <version>4.3.10-SNAPSHOT</version>
     </parent>
 
     <artifactId>xchange-binance</artifactId>
@@ -33,7 +33,7 @@
         <dependency>
             <groupId>com.github.salan1</groupId>
             <artifactId>xchange-core</artifactId>
-            <version>1ad9a1b53cd33281fe2de3775fbf28886cfa3cec</version>
+            <version>e3d58b589a528c4db09a817d06813cdced3f93cd</version>
         </dependency>
 
         <dependency>

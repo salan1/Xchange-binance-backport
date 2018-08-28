@@ -41,14 +41,10 @@ public class AccountServiceIntegration {
         Assert.assertTrue(accounts.size() > 0);
 
         CoinbaseAccount btcAccount =
-                StreamSupport.stream(accounts).filter(t -> t.getName().equals("BTC Wallet"))
+                StreamSupport.stream(accounts)
+                        .filter(t -> t.getName().equals("BTC Wallet"))
                         .collect(Collectors.toList())
                         .get(0);
-       /* accounts
-            .stream()
-            .filter(t -> t.getName().equals("BTC Wallet"))
-            .collect(Collectors.toList())
-            .get(0);*/
         Assert.assertEquals("BTC", btcAccount.getBalance().getCurrency());
         Assert.assertEquals("BTC Wallet", btcAccount.getName());
     }
