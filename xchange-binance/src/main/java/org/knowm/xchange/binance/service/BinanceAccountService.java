@@ -10,6 +10,8 @@ import java8.util.stream.Collectors;
 import java8.util.stream.StreamSupport;
 import org.knowm.xchange.Exchange;
 import org.knowm.xchange.binance.dto.account.BinanceAccountInformation;
+import org.knowm.xchange.binance.dto.account.DepositList;
+import org.knowm.xchange.binance.dto.account.WithdrawList;
 import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.dto.account.AccountInfo;
 import org.knowm.xchange.dto.account.Balance;
@@ -160,43 +162,41 @@ public class BinanceAccountService extends BinanceAccountServiceRaw implements A
 
         List<FundingRecord> result = new ArrayList<>();
         if (withdrawals) {
-            super.withdrawHistory(asset, startTime, endTime, recvWindow, getTimestamp())
-                    .forEach(
-                            w -> {
-                                result.add(
-                                        new FundingRecord(
-                                                w.address,
-                                                new Date(w.applyTime),
-                                                Currency.getInstance(w.asset),
-                                                w.amount,
-                                                w.id,
-                                                w.txId,
-                                                Type.WITHDRAWAL,
-                                                withdrawStatus(w.status),
-                                                null,
-                                                null,
-                                                null));
-                            });
+            List<WithdrawList.BinanceWithdraw> withdraws = super.withdrawHistory(asset, startTime, endTime, recvWindow, getTimestamp());
+            for (WithdrawList.BinanceWithdraw w : withdraws) {
+                result.add(
+                        new FundingRecord(
+                                w.address,
+                                new Date(w.applyTime),
+                                Currency.getInstance(w.asset),
+                                w.amount,
+                                w.id,
+                                w.txId,
+                                Type.WITHDRAWAL,
+                                withdrawStatus(w.status),
+                                null,
+                                null,
+                                null));
+            }
         }
 
         if (deposits) {
-            super.depositHistory(asset, startTime, endTime, recvWindow, getTimestamp())
-                    .forEach(
-                            d -> {
-                                result.add(
-                                        new FundingRecord(
-                                                d.address,
-                                                new Date(d.insertTime),
-                                                Currency.getInstance(d.asset),
-                                                d.amount,
-                                                null,
-                                                d.txId,
-                                                Type.DEPOSIT,
-                                                depositStatus(d.status),
-                                                null,
-                                                null,
-                                                null));
-                            });
+            List<DepositList.BinanceDeposit> depositsList = super.depositHistory(asset, startTime, endTime, recvWindow, getTimestamp());
+            for (DepositList.BinanceDeposit d : depositsList) {
+                result.add(
+                        new FundingRecord(
+                                d.address,
+                                new Date(d.insertTime),
+                                Currency.getInstance(d.asset),
+                                d.amount,
+                                null,
+                                d.txId,
+                                Type.DEPOSIT,
+                                depositStatus(d.status),
+                                null,
+                                null,
+                                null));
+            }
         }
 
         return result;
