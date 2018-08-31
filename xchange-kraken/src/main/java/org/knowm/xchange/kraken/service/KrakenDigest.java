@@ -3,11 +3,11 @@ package org.knowm.xchange.kraken.service;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Mac;
 import javax.ws.rs.FormParam;
 
+import org.apache.commons.codec.binary.Base64;
 import org.knowm.xchange.service.BaseParamsDigest;
 import si.mazi.rescu.RestInvocation;
 
