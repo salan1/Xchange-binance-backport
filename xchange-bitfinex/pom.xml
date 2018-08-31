@@ -34,7 +34,7 @@
         <dependency>
             <groupId>com.github.salan1</groupId>
             <artifactId>xchange-core</artifactId>
-            <version>1ad9a1b53cd33281fe2de3775fbf28886cfa3cec</version>
+            <version>6cca1d9b7b88a2103c7fa073ae361c292e964693</version>
         </dependency>
 
         <dependency>
