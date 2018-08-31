@@ -1,6 +1,6 @@
 package org.knowm.xchange.gdax.service;
 
-import java.util.Base64;
+import org.apache.commons.codec.binary.Base64;
 import javax.crypto.Mac;
 import javax.ws.rs.HeaderParam;
 import org.knowm.xchange.exceptions.ExchangeException;
@@ -18,7 +18,7 @@ public class GDAXDigest extends BaseParamsDigest {
 
   public static GDAXDigest createInstance(String secretKey) {
 
-    return secretKey == null ? null : new GDAXDigest(Base64.getDecoder().decode(secretKey));
+    return secretKey == null ? null : new GDAXDigest(Base64.decodeBase64(secretKey));
   }
 
   @Override
@@ -40,7 +40,7 @@ public class GDAXDigest extends BaseParamsDigest {
       throw new ExchangeException("Digest encoding exception", e);
     }
 
-    signature = Base64.getEncoder().encodeToString(mac256.doFinal());
+    signature = Base64.encodeBase64String(mac256.doFinal());
     return signature;
   }
 

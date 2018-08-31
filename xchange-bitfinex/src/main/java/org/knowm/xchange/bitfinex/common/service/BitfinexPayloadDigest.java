@@ -1,6 +1,6 @@
 package org.knowm.xchange.bitfinex.common.service;
 
-import java.util.Base64;
+import org.apache.commons.codec.binary.Base64;
 import si.mazi.rescu.ParamsDigest;
 import si.mazi.rescu.RestInvocation;
 
@@ -10,6 +10,6 @@ public class BitfinexPayloadDigest implements ParamsDigest {
   public synchronized String digestParams(RestInvocation restInvocation) {
 
     String postBody = restInvocation.getRequestBody();
-    return Base64.getEncoder().encodeToString(postBody.getBytes());
+    return Base64.encodeBase64String(postBody.getBytes());
   }
 }

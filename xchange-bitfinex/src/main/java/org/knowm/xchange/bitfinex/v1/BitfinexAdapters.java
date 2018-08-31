@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.Map.Entry;
 
-import java8.util.J8Arrays;
 import java8.util.stream.StreamSupport;
 import org.knowm.xchange.bitfinex.v1.dto.account.BitfinexAccountFeesResponse;
 import org.knowm.xchange.bitfinex.v1.dto.account.BitfinexBalancesResponse;
@@ -276,7 +275,7 @@ public final class BitfinexAdapters {
             String walletId = balance.getType();
 
             if (!walletsBalancesMap.containsKey(walletId)) {
-                walletsBalancesMap.put(walletId, new HashMap<>());
+                walletsBalancesMap.put(walletId, new HashMap<String, BigDecimal[]>());
             }
             Map<String, BigDecimal[]> balancesByCurrency =
                     walletsBalancesMap.get(walletId); // {total, available}
@@ -403,28 +402,27 @@ public final class BitfinexAdapters {
         final Map<CurrencyPair, CurrencyPairMetaData> currencyPairs =
                 exchangeMetaData.getCurrencyPairs();
         StreamSupport.parallelStream(symbolDetails)
-                .forEach(
-                        bitfinexSymbolDetail -> {
-                            final CurrencyPair currencyPair = adaptCurrencyPair(bitfinexSymbolDetail.getPair());
-                            if (currencyPairs.get(currencyPair) == null) {
-                                CurrencyPairMetaData newMetaData =
-                                        new CurrencyPairMetaData(
-                                                null,
-                                                bitfinexSymbolDetail.getMinimum_order_size(),
-                                                bitfinexSymbolDetail.getMaximum_order_size(),
-                                                bitfinexSymbolDetail.getPrice_precision());
-                                currencyPairs.put(currencyPair, newMetaData);
-                            } else {
-                                CurrencyPairMetaData oldMetaData = currencyPairs.get(currencyPair);
-                                CurrencyPairMetaData newMetaData =
-                                        new CurrencyPairMetaData(
-                                                oldMetaData.getTradingFee(),
-                                                bitfinexSymbolDetail.getMinimum_order_size(),
-                                                bitfinexSymbolDetail.getMaximum_order_size(),
-                                                bitfinexSymbolDetail.getPrice_precision());
-                                currencyPairs.put(currencyPair, newMetaData);
-                            }
-                        });
+                .forEach(bitfinexSymbolDetail -> {
+                    final CurrencyPair currencyPair = adaptCurrencyPair(bitfinexSymbolDetail.getPair());
+                    if (currencyPairs.get(currencyPair) == null) {
+                        CurrencyPairMetaData newMetaData =
+                                new CurrencyPairMetaData(
+                                        null,
+                                        bitfinexSymbolDetail.getMinimum_order_size(),
+                                        bitfinexSymbolDetail.getMaximum_order_size(),
+                                        bitfinexSymbolDetail.getPrice_precision());
+                        currencyPairs.put(currencyPair, newMetaData);
+                    } else {
+                        CurrencyPairMetaData oldMetaData = currencyPairs.get(currencyPair);
+                        CurrencyPairMetaData newMetaData =
+                                new CurrencyPairMetaData(
+                                        oldMetaData.getTradingFee(),
+                                        bitfinexSymbolDetail.getMinimum_order_size(),
+                                        bitfinexSymbolDetail.getMaximum_order_size(),
+                                        bitfinexSymbolDetail.getPrice_precision());
+                        currencyPairs.put(currencyPair, newMetaData);
+                    }
+                });
         return exchangeMetaData;
     }
 
@@ -461,17 +459,19 @@ public final class BitfinexAdapters {
 
         StreamSupport.parallelStream(currencyPairs
                 .keySet())
-                .forEach(
-                        currencyPair ->
-                                currencyPairs.merge(
-                                        currencyPair,
-                                        metaData,
-                                        (oldMetaData, newMetaData) ->
-                                                new CurrencyPairMetaData(
-                                                        newMetaData.getTradingFee(),
-                                                        oldMetaData.getMinimumAmount(),
-                                                        oldMetaData.getMaximumAmount(),
-                                                        oldMetaData.getPriceScale())));
+                .forEach(currencyPair -> {
+                    if (currencyPairs.containsKey(currencyPair)) {
+                        CurrencyPairMetaData oldMetaData = currencyPairs.get(currencyPair);
+                        CurrencyPairMetaData newMeta = new CurrencyPairMetaData(
+                                metaData.getTradingFee(),
+                                oldMetaData.getMinimumAmount(),
+                                oldMetaData.getMaximumAmount(),
+                                oldMetaData.getPriceScale());
+                        currencyPairs.put(currencyPair, newMeta);
+                    } else {
+                        currencyPairs.put(currencyPair, metaData);
+                    }
+                });
 
         return exchangeMetaData;
     }
