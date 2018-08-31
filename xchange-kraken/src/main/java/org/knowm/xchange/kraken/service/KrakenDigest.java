@@ -52,6 +52,6 @@ public class KrakenDigest extends BaseParamsDigest {
         mac512.update(("/" + restInvocation.getPath()).getBytes());
         mac512.update(sha256.digest());
 
-        return Base64.encodeBase64String(mac512.doFinal()).trim();
+        return new String(Base64.encodeBase64(mac512.doFinal())).trim();
     }
 }

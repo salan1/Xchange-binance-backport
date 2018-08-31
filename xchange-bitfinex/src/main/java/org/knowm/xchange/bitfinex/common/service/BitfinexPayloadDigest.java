@@ -10,6 +10,6 @@ public class BitfinexPayloadDigest implements ParamsDigest {
   public synchronized String digestParams(RestInvocation restInvocation) {
 
     String postBody = restInvocation.getRequestBody();
-    return Base64.encodeBase64String(postBody.getBytes());
+    return new String(Base64.encodeBase64(postBody.getBytes()));
   }
 }

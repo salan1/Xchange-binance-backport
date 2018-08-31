@@ -33,7 +33,7 @@ public class BitfinexHmacPostBodyDigest extends BaseParamsDigest {
 
         String postBody = restInvocation.getRequestBody();
         Mac mac = getMac();
-        mac.update(Base64.encodeBase64String(postBody.getBytes()).getBytes());
+        mac.update(new String(Base64.encodeBase64(postBody.getBytes())).getBytes());
 
         return String.format("%096x", new BigInteger(1, mac.doFinal()));
     }
